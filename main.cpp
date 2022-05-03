@@ -1,29 +1,23 @@
 #include <iostream>
 #include "parser.hpp"
 
-
 int main()
 {
-    ParserJson parser;
+    message mesToClient;
 
-    std::cout << std::endl << "Client" << std::endl;
-    clientMessage mes1("text to client", "time to client", "cryptoWord to client");
+    mesToClient.text = "text for client";
+    mesToClient.time = "00.20";
+    mesToClient.cryptoWord = "fheughskefs";
 
-    std::string answer1 = parser.parsJsonToClient(mes1);
-    std::cout << answer1;
+    ParserJson* parser = new ParserClientMessage;
 
-    clientMessage answer2 = parser.parsJsonFromClient(answer1);
-    std::cout << answer2.text << ", " << answer2.time << ", " << answer2.cryptoWord << std::endl;
+    std::string strToClient = parser->parsToJson(mesToClient);
 
+    std::cout << "Json to client:" << std::endl << strToClient;
+    
+    message mesFromClient = parser->parsFromJson(strToClient);
 
-    std::cout << std::endl << "Server" << std::endl;
-    serverMessage mes2("text to server", "time to server", 4, "login to server");
-
-    std::string answer3 = parser.parsJsonToServer(mes2);
-    std::cout << answer3;
-
-    serverMessage answer4 = parser.parsJsonFromServer(answer3);
-    std::cout << answer4.text << ", " << answer4.time << ", " << answer4.type << ", " << answer4.login << std::endl;
+    std::cout << "String to client:" << std::endl << mesFromClient.text << " " << mesFromClient.time << " " << mesFromClient.cryptoWord << std::endl;;
 
     return 0;
 }

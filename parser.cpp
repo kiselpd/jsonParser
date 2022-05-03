@@ -11,39 +11,34 @@ const std::string LOGIN = "login";
 const std::string TYPE = "type";
 const std::string EMPTY_STR = "";
 
-clientMessage::clientMessage() {};
-clientMessage::clientMessage(std::string text, std::string time, std::string cryptoWord) : text(text), time(time), cryptoWord(cryptoWord) {};
 
-serverMessage::serverMessage() {};
-serverMessage::serverMessage(std::string text, std::string time, size_t type, std::string login) : text(text), time(time), type(type), login(login) {};
-
-std::string ParserJson::parsJsonToClient(clientMessage sendMessage)
+std::string ParserClientMessage::parsToJson(message sendMessage)
 {
     boost::property_tree::ptree json;
 
     json.put(TEXT, sendMessage.text);
-    json.put(TIME, sendMessage.time);                                 
+    json.put(TIME, sendMessage.time);
     json.put(CRYPTO_WORD, sendMessage.cryptoWord);
 
     if (json.empty())
         return EMPTY_STR;
 
     std::stringstream myJsonEncodedData;
-    boost::property_tree::write_json(myJsonEncodedData, json);           
+    boost::property_tree::write_json(myJsonEncodedData, json);
 
     return myJsonEncodedData.str();
 }
 
-clientMessage ParserJson::parsJsonFromClient(std::string jsonString)
+message ParserClientMessage::parsFromJson(std::string jsonString)
 {
     try
     {
         std::stringstream jsonEncodedData(jsonString);
         boost::property_tree::ptree json;
 
-        boost::property_tree::read_json(jsonEncodedData, json);                
+        boost::property_tree::read_json(jsonEncodedData, json);
 
-        clientMessage getMessage;
+        message getMessage;
 
         getMessage.text = json.get<std::string>(TEXT, EMPTY_STR);
         getMessage.time = json.get<std::string>(TIME, EMPTY_STR);
@@ -53,12 +48,12 @@ clientMessage ParserJson::parsJsonFromClient(std::string jsonString)
     catch (std::exception const& error)
     {
         //std::cerr << error.what() << std::endl; - возможно потом где-то сохранять ошибки
-        clientMessage emptyMessage;
+        message emptyMessage;
         return emptyMessage;
     }
 }
 
-std::string ParserJson::parsJsonToServer(serverMessage sendMessage)
+std::string ParserServerMessage::parsToJson(message sendMessage)
 {
     boost::property_tree::ptree json;
 
@@ -76,16 +71,16 @@ std::string ParserJson::parsJsonToServer(serverMessage sendMessage)
     return myJsonEncodedData.str();
 }
 
-serverMessage ParserJson::parsJsonFromServer(std::string jsonString)
+message ParserServerMessage::parsFromJson(std::string jsonString)
 {
     try
     {
         std::stringstream jsonEncodedData(jsonString);
         boost::property_tree::ptree json;
 
-        boost::property_tree::read_json(jsonEncodedData, json);                 
+        boost::property_tree::read_json(jsonEncodedData, json);
 
-        serverMessage getMessage;
+        message getMessage;
 
         getMessage.text = json.get<std::string>(TEXT, EMPTY_STR);
         getMessage.time = json.get<std::string>(TIME, EMPTY_STR);
@@ -97,8 +92,7 @@ serverMessage ParserJson::parsJsonFromServer(std::string jsonString)
     catch (std::exception const& error)
     {
         //std::cerr << error.what() << std::endl; - возможно потом где-то сохранять ошибки
-        serverMessage emptyMessage;
+        message emptyMessage;
         return emptyMessage;
     }
 }
-

@@ -2,35 +2,34 @@
 
 #include <string>
 
-struct clientMessage
+struct message
 {
 public:
     std::string text;
     std::string time;
     std::string cryptoWord;
-
-    clientMessage();
-    clientMessage(std::string text, std::string time, std::string cryptoWord);
-};
-
-struct serverMessage
-{
-public:
-    std::string text;
-    std::string time;
     std::string login;
     size_t type;
-
-    serverMessage();
-    serverMessage(std::string text, std::string time, size_t type, std::string login);
 };
 
 class ParserJson
 {
 public:
-    std::string parsJsonToClient(clientMessage message);
-    std::string parsJsonToServer(serverMessage message);
+    virtual std::string parsToJson(message sendMssage) = 0;
+    virtual message parsFromJson(std::string jsonString) = 0;
 
-    clientMessage parsJsonFromClient(std::string jsonString);
-    serverMessage parsJsonFromServer(std::string jsonString);
+};
+
+class ParserClientMessage : public ParserJson
+{
+public:
+    std::string parsToJson(message sendMessage) override;
+    message parsFromJson(std::string jsonString) override;
+};
+
+class ParserServerMessage : public ParserJson
+{
+public:
+    std::string parsToJson(message sendMessage) override;
+    message parsFromJson(std::string jsonString) override;
 };
