@@ -11,8 +11,8 @@ const std::string LOGIN = "login";
 const std::string TYPE = "type";
 const std::string EMPTY_STR = "";
 
-
-std::string ParserClientMessage::parsToJson(message sendMessage)
+template<>
+std::string ParserClientMessage<clientMessage>::parsToJson(clientMessage sendMessage) 
 {
     boost::property_tree::ptree json;
 
@@ -29,7 +29,8 @@ std::string ParserClientMessage::parsToJson(message sendMessage)
     return myJsonEncodedData.str();
 }
 
-message ParserClientMessage::parsFromJson(std::string jsonString)
+template<>
+clientMessage ParserClientMessage<clientMessage>::parsFromJson(std::string jsonString)
 {
     try
     {
@@ -38,7 +39,7 @@ message ParserClientMessage::parsFromJson(std::string jsonString)
 
         boost::property_tree::read_json(jsonEncodedData, json);
 
-        message getMessage;
+        clientMessage getMessage;
 
         getMessage.text = json.get<std::string>(TEXT, EMPTY_STR);
         getMessage.time = json.get<std::string>(TIME, EMPTY_STR);
@@ -48,12 +49,13 @@ message ParserClientMessage::parsFromJson(std::string jsonString)
     catch (std::exception const& error)
     {
         //std::cerr << error.what() << std::endl; - возможно потом где-то сохранять ошибки
-        message emptyMessage;
+        clientMessage emptyMessage;
         return emptyMessage;
     }
 }
 
-std::string ParserServerMessage::parsToJson(message sendMessage)
+template<>
+std::string ParserServerMessage<serverMessage>::parsToJson(serverMessage sendMessage) 
 {
     boost::property_tree::ptree json;
 
@@ -71,7 +73,8 @@ std::string ParserServerMessage::parsToJson(message sendMessage)
     return myJsonEncodedData.str();
 }
 
-message ParserServerMessage::parsFromJson(std::string jsonString)
+template<>
+serverMessage ParserServerMessage<serverMessage>::parsFromJson(std::string jsonString) 
 {
     try
     {
@@ -80,7 +83,7 @@ message ParserServerMessage::parsFromJson(std::string jsonString)
 
         boost::property_tree::read_json(jsonEncodedData, json);
 
-        message getMessage;
+        serverMessage getMessage;
 
         getMessage.text = json.get<std::string>(TEXT, EMPTY_STR);
         getMessage.time = json.get<std::string>(TIME, EMPTY_STR);
@@ -92,7 +95,16 @@ message ParserServerMessage::parsFromJson(std::string jsonString)
     catch (std::exception const& error)
     {
         //std::cerr << error.what() << std::endl; - возможно потом где-то сохранять ошибки
-        message emptyMessage;
+        serverMessage emptyMessage;
         return emptyMessage;
     }
 }
+
+template<typename T>
+ParserJson<T>::~ParserJson() {};
+
+template<>
+ParserClientMessage<clientMessage>::~ParserClientMessage() {};
+
+template<>
+ParserServerMessage<serverMessage>::~ParserServerMessage() {};

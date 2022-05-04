@@ -1,35 +1,48 @@
 #pragma once
-
+#include<iostream>
 #include <string>
 
-struct message
+struct clientMessage
 {
-public:
     std::string text;
     std::string time;
     std::string cryptoWord;
+};
+
+struct serverMessage
+{
+    std::string text;
+    std::string time;
     std::string login;
     size_t type;
 };
 
+template<typename T>
 class ParserJson
 {
 public:
-    virtual std::string parsToJson(message sendMssage) = 0;
-    virtual message parsFromJson(std::string jsonString) = 0;
+    virtual std::string parsToJson(T sendMessage) = 0;
+    virtual T parsFromJson(std::string jsonString) = 0;
 
+    virtual ~ParserJson();
 };
 
-class ParserClientMessage : public ParserJson
+template<typename T>
+class ParserClientMessage : public ParserJson<T>
 {
 public:
-    std::string parsToJson(message sendMessage) override;
-    message parsFromJson(std::string jsonString) override;
+    std::string parsToJson(T sendMessage) override;
+    T parsFromJson(std::string jsonString) override;
+
+    ~ParserClientMessage();
 };
 
-class ParserServerMessage : public ParserJson
+template<typename T>
+class ParserServerMessage : public ParserJson<T>
 {
 public:
-    std::string parsToJson(message sendMessage) override;
-    message parsFromJson(std::string jsonString) override;
+    std::string parsToJson(T sendMessage) override;
+    T parsFromJson(std::string jsonString) override;
+
+    ~ParserServerMessage();
 };
