@@ -17,32 +17,23 @@ struct serverMessage
     size_t type;
 };
 
-template<typename T>
 class ParserJson
 {
 public:
-    virtual std::string parsToJson(T sendMessage) = 0;
-    virtual T parsFromJson(std::string jsonString) = 0;
-
-    virtual ~ParserJson();
+    virtual std::string parsToJson(void* message) = 0;
+    virtual void* parsFromJson(std::string jsonString) = 0;
 };
 
-template<typename T>
-class ParserClientMessage : public ParserJson<T>
+class ParserClientMessage : public ParserJson
 {
 public:
-    std::string parsToJson(T sendMessage) override;
-    T parsFromJson(std::string jsonString) override;
-
-    ~ParserClientMessage();
+    std::string parsToJson(void* message) override;
+    void* parsFromJson(std::string jsonString) override;
 };
 
-template<typename T>
-class ParserServerMessage : public ParserJson<T>
+class ParserServerMessage : public ParserJson
 {
 public:
-    std::string parsToJson(T sendMessage) override;
-    T parsFromJson(std::string jsonString) override;
-
-    ~ParserServerMessage();
+    std::string parsToJson(void* message) override;
+    void* parsFromJson(std::string jsonString) override;
 };

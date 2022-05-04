@@ -11,14 +11,16 @@ const std::string LOGIN = "login";
 const std::string TYPE = "type";
 const std::string EMPTY_STR = "";
 
-template<>
-std::string ParserClientMessage<clientMessage>::parsToJson(clientMessage sendMessage) 
+
+std::string ParserClientMessage::parsToJson(void* message) 
 {
     boost::property_tree::ptree json;
 
-    json.put(TEXT, sendMessage.text);
-    json.put(TIME, sendMessage.time);
-    json.put(CRYPTO_WORD, sendMessage.cryptoWord);
+    clientMessage* sendMessage = (clientMessage*)message;
+
+    json.put(TEXT, sendMessage->text);
+    json.put(TIME, sendMessage->time);
+    json.put(CRYPTO_WORD, sendMessage->cryptoWord);
 
     if (json.empty())
         return EMPTY_STR;
@@ -29,8 +31,8 @@ std::string ParserClientMessage<clientMessage>::parsToJson(clientMessage sendMes
     return myJsonEncodedData.str();
 }
 
-template<>
-clientMessage ParserClientMessage<clientMessage>::parsFromJson(std::string jsonString)
+
+void* ParserClientMessage::parsFromJson(std::string jsonString)
 {
     try
     {
@@ -39,30 +41,32 @@ clientMessage ParserClientMessage<clientMessage>::parsFromJson(std::string jsonS
 
         boost::property_tree::read_json(jsonEncodedData, json);
 
-        clientMessage getMessage;
+        clientMessage* getMessage = new clientMessage;
 
-        getMessage.text = json.get<std::string>(TEXT, EMPTY_STR);
-        getMessage.time = json.get<std::string>(TIME, EMPTY_STR);
-        getMessage.cryptoWord = json.get<std::string>(CRYPTO_WORD, EMPTY_STR);
+        getMessage->text = json.get<std::string>(TEXT, EMPTY_STR);
+        getMessage->time = json.get<std::string>(TIME, EMPTY_STR);
+        getMessage->cryptoWord = json.get<std::string>(CRYPTO_WORD, EMPTY_STR);
         return getMessage;
     }
     catch (std::exception const& error)
     {
         //std::cerr << error.what() << std::endl; - возможно потом где-то сохранять ошибки
-        clientMessage emptyMessage;
+        clientMessage* emptyMessage = new clientMessage;
         return emptyMessage;
     }
 }
 
-template<>
-std::string ParserServerMessage<serverMessage>::parsToJson(serverMessage sendMessage) 
+
+std::string ParserServerMessage::parsToJson(void* message) 
 {
     boost::property_tree::ptree json;
 
-    json.put(TEXT, sendMessage.text);
-    json.put(TIME, sendMessage.time);
-    json.put(LOGIN, sendMessage.login);
-    json.put(TYPE, sendMessage.type);
+    serverMessage* sendMessage = (serverMessage*)message;
+
+    json.put(TEXT, sendMessage->text);
+    json.put(TIME, sendMessage->time);
+    json.put(LOGIN, sendMessage->login);
+    json.put(TYPE, sendMessage->type);
 
     if (json.empty())
         return EMPTY_STR;
@@ -73,8 +77,8 @@ std::string ParserServerMessage<serverMessage>::parsToJson(serverMessage sendMes
     return myJsonEncodedData.str();
 }
 
-template<>
-serverMessage ParserServerMessage<serverMessage>::parsFromJson(std::string jsonString) 
+
+void* ParserServerMessage::parsFromJson(std::string jsonString) 
 {
     try
     {
@@ -83,28 +87,19 @@ serverMessage ParserServerMessage<serverMessage>::parsFromJson(std::string jsonS
 
         boost::property_tree::read_json(jsonEncodedData, json);
 
-        serverMessage getMessage;
+        serverMessage* getMessage = new serverMessage;
 
-        getMessage.text = json.get<std::string>(TEXT, EMPTY_STR);
-        getMessage.time = json.get<std::string>(TIME, EMPTY_STR);
-        getMessage.login = json.get<std::string>(LOGIN, EMPTY_STR);
-        getMessage.type = json.get<size_t>(TYPE, 0);
+        getMessage->text = json.get<std::string>(TEXT, EMPTY_STR);
+        getMessage->time = json.get<std::string>(TIME, EMPTY_STR);
+        getMessage->login = json.get<std::string>(LOGIN, EMPTY_STR);
+        getMessage->type = json.get<size_t>(TYPE, 0);
 
         return getMessage;
     }
     catch (std::exception const& error)
     {
         //std::cerr << error.what() << std::endl; - возможно потом где-то сохранять ошибки
-        serverMessage emptyMessage;
+        serverMessage* emptyMessage = new serverMessage;
         return emptyMessage;
     }
 }
-
-template<typename T>
-ParserJson<T>::~ParserJson() {};
-
-template<>
-ParserClientMessage<clientMessage>::~ParserClientMessage() {};
-
-template<>
-ParserServerMessage<serverMessage>::~ParserServerMessage() {};
